@@ -20,9 +20,8 @@ package org.apache.sling.providertype.bndplugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Map;
 import java.util.jar.Manifest;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -35,11 +34,11 @@ import aQute.bnd.service.Plugin;
 
 public class BndBuilderExtension implements BeforeEachCallback, AfterEachCallback {
     
-    protected Builder builder;
-    private final Collection<Object> plugins;
+    private Builder builder;
+    private final Object plugin;
 
-    public BndBuilderExtension(Object... plugins) {
-        this.plugins = Arrays.asList(plugins);
+    public BndBuilderExtension(Object plugin) {
+        this.plugin = plugin;
     }
 
     @Override
@@ -49,13 +48,24 @@ public class BndBuilderExtension implements BeforeEachCallback, AfterEachCallbac
         classesDirJar.setManifest(new Manifest());
         builder.setJar(classesDirJar); // jar closed with builder
         builder.setSourcepath(new File[] { new File("src/test/java") } );
-        for (Object plugin : plugins) {
-            if (plugin instanceof Plugin) {
-                Plugin pluginPlugin = (Plugin)plugin;
-                pluginPlugin.setReporter(builder);
-                pluginPlugin.setProperties(new HashMap<>()); // not used
-            }
-            builder.addBasicPlugin(plugin);
+        if (plugin instanceof Plugin) {
+            Plugin pluginPlugin = (Plugin)plugin;
+            pluginPlugin.setReporter(builder);
+            pluginPlugin.setProperties(Collections.emptyMap());
+        }
+        builder.addBasicPlugin(plugin);
+    }
+
+    protected Builder getBuilder() {
+        return builder;
+    }
+
+    protected void setPluginProperties(Map<String, String> pluginProperties) throws Exception{
+        if (plugin instanceof Plugin) {
+            Plugin pluginPlugin = (Plugin)plugin;
+            pluginPlugin.setProperties(pluginProperties);
+        } else {
+            throw new IllegalStateException("Given plugin does not implement class Plugin but is " + plugin);
         }
     }
 

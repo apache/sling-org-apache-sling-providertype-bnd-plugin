@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -38,8 +39,8 @@ class ProviderTypeScannerTest {
     static BndBuilderExtension bndBuilderExtension = new BndBuilderExtension(new ProviderTypeScanner());
 
     @Test
-    void testBuildWithViolations() throws Exception {
-        Builder builder = bndBuilderExtension.builder;
+    void testBuildWithViolationsAndApiInfoJson() throws Exception {
+        Builder builder = bndBuilderExtension.getBuilder();
         // add classpath entry with api-info.json
         builder.setClasspath(new File[] { new File("src/test/resources") });
         try (Jar jar = builder.build()) {
@@ -55,35 +56,38 @@ class ProviderTypeScannerTest {
 
     @Test
     void testBuildWithoutProviderTypeMetadata() throws Exception {
-        Builder builder = bndBuilderExtension.builder;
+        Builder builder = bndBuilderExtension.getBuilder();
+        // add classpath entry without api-info.json
+        builder.setClasspath(new File[] { new File("target/test-classpath/oak-jackrabbit-api.jar") });
+        bndBuilderExtension.setPluginProperties(Map.of("evaluateAnnotations", "true"));
         try (Jar jar = builder.build()) {
-            if (!builder.getErrors().isEmpty()) {
-                fail(String.join("\n", builder.getErrors()));
-            }
+            List<String> expectedErrors = Arrays.asList(
+                    "Type \"org.apache.sling.providertype.bndplugin.MyBinaryDownload\" implements provider type \"org.apache.jackrabbit.api.binary.BinaryDownload\". This is not allowed!");
+            assertEquals(expectedErrors, builder.getErrors());
             List<String> expectedWarnings = Arrays.asList(
-                    "Could not find resource \"META-INF/api-info.json\" in the classpath");
+                    "Retrieving provider type info from annotations found in classpath...");
             assertEquals(expectedWarnings, builder.getWarnings());
         }
     }
 
     @Test
     void testBuildWithInvalidProviderTypeMetadata() throws Exception {
-        Builder builder = bndBuilderExtension.builder;
+        Builder builder = bndBuilderExtension.getBuilder();
         // add classpath entry with api-info.json
         builder.setClasspath(new File[] { new File("src/test/resources2") });
         try (Jar jar = builder.build()) {
             List<String> expectedErrors = Arrays.asList(
                     "Resource \"META-INF/api-info.json\" does not contain a field named \"providerTypes\"");
             assertEquals(expectedErrors, builder.getErrors());
-            if (!builder.getWarnings().isEmpty()) {
-                fail(String.join("\n", builder.getWarnings()));
-            }
+            List<String> expectedWarnings = Arrays.asList(
+                    "No provider types found, skip checking bundle's classes");
+            assertEquals(expectedWarnings, builder.getWarnings());
         }
     }
 
     @Test
     void testBuildWithInvalidProviderTypeMetadata2() throws Exception {
-        Builder builder = bndBuilderExtension.builder;
+        Builder builder = bndBuilderExtension.getBuilder();
         // add classpath entry with api-info.json
         builder.setClasspath(new File[] { new File("src/test/resources3") });
         try (Jar jar = builder.build()) {
