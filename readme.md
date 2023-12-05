@@ -14,7 +14,7 @@ This module contains a [Bnd plugin][bnd-plugins] enforcing that no class of the 
 
 That ensures that the `import-package` version ranges are not narrow but [broad][semantic-versioning] and the risk that the bundle is incompatible with newer versions of its dependent bundles is less likely.
 
-# Usage
+## Usage
 
 For usage with Maven the Bnd plugin has to be added to the plugin dependencies of `bnd-maven-plugin` (or `maven-bundle-plugin`) like this:
 
@@ -39,7 +39,7 @@ In addition the `bnd.bnd` file needs to register the Bnd plugin with the [plugin
 -plugin.providertype:org.apache.sling.providertype.bndplugin.ProviderTypeScanner
 ```
 
-## Configuration
+### Configuration
 
 To explicitly ignore certain provider types (i.e. don't fail when these are extended/implemented) one can use the attribute `ignored` with one or multiple comma-separated fully qualified provider type names. For example
 
@@ -47,18 +47,28 @@ To explicitly ignore certain provider types (i.e. don't fail when these are exte
 -plugin.providertype:org.apache.sling.providertype.bndplugin.ProviderTypeScanner;ignored=org.apache.jackrabbit.api.security.user.User
 ```
 
-## Prerequisites
+In case the provider types are not provided in a classpath resource named [`META-INF/api-info.json`][api-info.json] the plugin can optionally evaluate the classpath for the relevant annotations directly. Since this is time consuming it needs to be explicitly enabled via attribute `evaluateAnnotations` with value `true`.
+
+```
+-plugin.providertype:org.apache.sling.providertype.bndplugin.ProviderTypeScanner;evaluateAnnotations=true
+```
+
+Multiple attributes must be separated with `;` according to [OSGi Common Header Syntax][common-header].
+
+### Prerequisites
 
 * Bnd 6.0 or newer (integrated in `bnd-maven-plugin` version 6.0.0+ or `maven-bundle-plugin` version 5.1.5+)
 * Java 11 or newer
 
-# Provider Type Information
+## Provider Type Information
 
 The information whether a type (i.e. a class or interface) is designed to be extended/implemented only by providers or also by consumers is determined originally from the the annotations [`@org.osgi.annotation.versioning.ProviderType`][provider-type] or [`@org.osgi.annotation.versioning.ConsumerType`][consumer-type].
-In order to speed up the check [the annotation is evaluated and extracted into a dedicated JSON file named `META-INF/api-info.json` when generating the apis jar](https://issues.apache.org/jira/browse/SLING-12135) and being looked up from there within this plugin.
+In order to speed up the check [the annotation is evaluated and extracted into a dedicated JSON file named `META-INF/api-info.json` when generating the apis jar][api-info.json] and being looked up from there within this plugin. Only as fallback and on demand this plugin evaluates the annotations from the classpath directly.
 
 
 [bnd-plugins]: https://bnd.bndtools.org/chapters/870-plugins.html
 [provider-type]: https://docs.osgi.org/javadoc/osgi.annotation/8.0.0/org/osgi/annotation/versioning/ProviderType.html
 [consumer-type]: https://docs.osgi.org/javadoc/osgi.annotation/8.0.0/org/osgi/annotation/versioning/ConsumerType.html
 [semantic-versioning]: https://docs.osgi.org/whitepaper/semantic-versioning/060-importer-policy.html
+[api-info.json]: https://issues.apache.org/jira/browse/SLING-12135
+[common-header]: https://docs.osgi.org/specification/osgi.core/8.0.0/framework.module.html#framework.common.header.syntax
