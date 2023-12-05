@@ -1,0 +1,12 @@
+github:
+  description: "Apache Sling Provider Type Checker Bnd Plugin"
+  autolink_jira:
+  - "SLING"
+  - "OAK"
+  - "JCR"
+  - "JCRVLT"
+  - "INFRA"
+  - "FELIX"
+  - "MNG"
+notifications:
+  jira_options: "link"
