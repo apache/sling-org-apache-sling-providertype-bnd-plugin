@@ -1,0 +1,3 @@
+{
+    "providerTypes":["org.apache.sling.providertype.bndplugin.TypeA","org.apache.sling.providertype.bndplugin.TypeB"]
+}
