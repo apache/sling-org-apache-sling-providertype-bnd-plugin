@@ -22,7 +22,6 @@ For usage with Maven the Bnd plugin has to be added to the plugin dependencies o
 <plugin>
     <groupId>biz.aQute.bnd</groupId>
     <artifactId>bnd-maven-plugin</artifactId>
-    <extensions>true</extensions>
     <dependencies>
         <dependency>
             <groupId>org.apache.sling</groupId>
