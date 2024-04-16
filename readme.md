@@ -62,7 +62,7 @@ Multiple attributes must be separated with `;` according to [OSGi Common Header 
 ## Provider Type Information
 
 The information whether a type (i.e. a class or interface) is designed to be extended/implemented only by providers or also by consumers is determined originally from the the annotations [`@org.osgi.annotation.versioning.ProviderType`][provider-type] or [`@org.osgi.annotation.versioning.ConsumerType`][consumer-type].
-In order to speed up the check [the annotation is evaluated and extracted into a dedicated JSON file named `META-INF/api-info.json` when generating the apis jar][api-info.json] and being looked up from there within this plugin. Only as fallback and on demand this plugin evaluates the annotations from the classpath directly.
+In order to speed up the check [the annotation is evaluated and extracted into a dedicated JSON file named `META-INF/api-info.json` when generating the apis jar][api-info.json] and being looked up from this resource in the Bnd classpath within this plugin. Only as fallback and on demand this plugin evaluates the annotations from the classpath directly.
 
 ### Remarks
 
