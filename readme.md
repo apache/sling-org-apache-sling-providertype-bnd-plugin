@@ -67,7 +67,7 @@ In order to speed up the check [the annotation is evaluated and extracted into a
 ### Remarks
 
 All provider type annotations are not inherited, i.e. only the direct super class and directly implemented interfaces are ever evaluated ([OSGi issue #634](https://github.com/osgi/osgi/issues/643)).
-Bnd does not correctly calculate the proper import-package version policy for provider type classes being extended ([Bnd issue #5925](https://github.com/bndtools/bnd/issues/5925)).
+Bnd does not correctly calculate the proper import-package version policy for provider type classes being extended ([Bnd issue #5925](https://github.com/bndtools/bnd/issues/5925)) in version < 7.1.0, though.
 
 
 [bnd-plugins]: https://bnd.bndtools.org/chapters/870-plugins.html
